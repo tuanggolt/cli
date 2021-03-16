@@ -107,11 +107,9 @@ func runView(opts *ViewOptions) error {
 		}
 	}
 
-	// TODO extract markdown stuff into its own PR
 	// TODO add --branch here
-	// TODO add -branch to workflow list
+	// TODO add --branch to workflow list
 	// TODO support passing workflow name as argument
-	// TODO put ID: in front of ID
 
 	if opts.Web {
 		hostname := repo.RepoHost()
@@ -121,8 +119,6 @@ func runView(opts *ViewOptions) error {
 			ghrepo.FullName(repo),
 			baseName)
 		if opts.IO.IsStdoutTTY() {
-			// TODO decide which one to use
-			//workflowURL := workflow.HTMLURL
 			fmt.Fprintf(opts.IO.Out, "Opening %s in your browser.\n", utils.DisplayURL(workflowURL))
 		}
 		return utils.OpenInBrowser(workflowURL)
@@ -145,12 +141,10 @@ func runView(opts *ViewOptions) error {
 		out := opts.IO.Out
 
 		fmt.Fprintln(out, cs.Bold(workflow.Name))
-		fmt.Fprintf(out, "%s %s", cs.Gray(workflow.Path), cs.Cyanf("%d", workflow.ID))
-		// TODO any more metadata?
+		fmt.Fprintf(out, "%s ID: %s", cs.Gray(workflow.Path), cs.Cyanf("%d", workflow.ID))
 
 		codeBlock := fmt.Sprintf("```yaml\n%s\n```", yaml)
-		// TODO fix indentation
-		rendered, err := markdown.Render(codeBlock, markdownStyle, "")
+		rendered, err := markdown.Render(codeBlock, markdownStyle)
 		if err != nil {
 			return err
 		}
