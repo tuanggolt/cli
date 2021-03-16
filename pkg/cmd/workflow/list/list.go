@@ -6,18 +6,14 @@ import (
 
 	"github.com/cli/cli/api"
 	"github.com/cli/cli/internal/ghrepo"
+	"github.com/cli/cli/pkg/cmd/workflow/shared"
 	"github.com/cli/cli/pkg/cmdutil"
 	"github.com/cli/cli/pkg/iostreams"
 	"github.com/cli/cli/utils"
 	"github.com/spf13/cobra"
 )
 
-const (
-	defaultLimit = 10
-
-	Active           WorkflowState = "active"
-	DisabledManually WorkflowState = "disabled_manually"
-)
+const defaultLimit = 10
 
 type ListOptions struct {
 	IO         *iostreams.IOStreams
@@ -79,7 +75,7 @@ func listRun(opts *ListOptions) error {
 	client := api.NewClientFromHTTP(httpClient)
 
 	opts.IO.StartProgressIndicator()
-	workflows, err := getWorkflows(client, repo, opts.Limit)
+	workflows, err := shared.GetWorkflows(client, repo, opts.Limit)
 	opts.IO.StopProgressIndicator()
 	if err != nil {
 		return fmt.Errorf("could not get workflows: %w", err)
@@ -106,16 +102,4 @@ func listRun(opts *ListOptions) error {
 	}
 
 	return tp.Render()
-}
-
-type WorkflowState string
-
-type Workflow struct {
-	Name  string
-	ID    int
-	State WorkflowState
-}
-
-func (w *Workflow) Disabled() bool {
-	return w.State != Active
 }
