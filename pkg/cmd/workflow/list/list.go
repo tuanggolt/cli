@@ -6,7 +6,6 @@ import (
 
 	"github.com/cli/cli/api"
 	"github.com/cli/cli/internal/ghrepo"
-	"github.com/cli/cli/pkg/cmd/workflow/shared"
 	"github.com/cli/cli/pkg/cmdutil"
 	"github.com/cli/cli/pkg/iostreams"
 	"github.com/cli/cli/utils"
@@ -15,6 +14,9 @@ import (
 
 const (
 	defaultLimit = 10
+
+	Active           WorkflowState = "active"
+	DisabledManually WorkflowState = "disabled_manually"
 )
 
 type ListOptions struct {
@@ -106,42 +108,14 @@ func listRun(opts *ListOptions) error {
 	return tp.Render()
 }
 
-type WorkflowsPayload struct {
-	Workflows []shared.Workflow
+type WorkflowState string
+
+type Workflow struct {
+	Name  string
+	ID    int
+	State WorkflowState
 }
 
-func getWorkflows(client *api.Client, repo ghrepo.Interface, limit int) ([]shared.Workflow, error) {
-	perPage := limit
-	page := 1
-	if limit > 100 {
-		perPage = 100
-	}
-
-	workflows := []shared.Workflow{}
-
-	for len(workflows) < limit {
-		var result WorkflowsPayload
-
-		path := fmt.Sprintf("repos/%s/actions/workflows?per_page=%d&page=%d", ghrepo.FullName(repo), perPage, page)
-
-		err := client.REST(repo.RepoHost(), "GET", path, nil, &result)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, workflow := range result.Workflows {
-			workflows = append(workflows, workflow)
-			if len(workflows) == limit {
-				break
-			}
-		}
-
-		if len(result.Workflows) < perPage {
-			break
-		}
-
-		page++
-	}
-
-	return workflows, nil
+func (w *Workflow) Disabled() bool {
+	return w.State != Active
 }
