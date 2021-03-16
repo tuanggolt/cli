@@ -107,6 +107,12 @@ func runView(opts *ViewOptions) error {
 		}
 	}
 
+	// TODO extract markdown stuff into its own PR
+	// TODO add --branch here
+	// TODO add -branch to workflow list
+	// TODO support passing workflow name as argument
+	// TODO put ID: in front of ID
+
 	if opts.Web {
 		hostname := repo.RepoHost()
 		baseName := filepath.Base(workflow.Path)
