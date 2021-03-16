@@ -63,11 +63,6 @@ func NewCmdView(f *cmdutil.Factory, runF func(*ViewOptions) error) *cobra.Comman
 				opts.Prompt = true
 			}
 
-			// TODO support --branch?
-			// Is this worth supporting in the first pass? I can't, for example, use
-			// this tool to view the workflow file for my prautomation branch without
-			// such support.
-
 			if runF != nil {
 				return runF(opts)
 			}
@@ -110,6 +105,7 @@ func runView(opts *ViewOptions) error {
 	// TODO add --branch here
 	// TODO add --branch to workflow list
 	// TODO support passing workflow name as argument
+	// TODO include workflow stuff in gh actions
 
 	if opts.Web {
 		hostname := repo.RepoHost()
